@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  schedule:
+    - cron: "23 7 * * 1"
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  install:
+    runs-on: macos-26
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@e99025eb970cfa124b8284a35463d87426917478 # 2026.09.28.1
+        with:
+          stable: true
+
+      - name: Check style
+        run: brew style --cask rave-ieeg/tap/rave-ieeg
+
+      - name: Audit
+        run: brew audit --cask --except stanza_requires_uninstall rave-ieeg/tap/rave-ieeg
+
+      - name: Install
+        run: brew install rave-ieeg/tap/rave-ieeg
+
+      # The cask's installer can't fail the install, so this is the real check
+      - name: Open RAVE
+        run: |
+          rave start --no-browser > rave.log 2>&1 &
+          rave_pid=$!
+          for _ in {1..360}; do
+            curl --fail --silent --output /dev/null http://127.0.0.1:8788/ && exit 0
+            kill -0 "$rave_pid" 2> /dev/null || break
+            sleep 5
+          done
+          cat rave.log
+          exit 1
