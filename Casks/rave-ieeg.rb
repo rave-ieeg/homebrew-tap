@@ -2,8 +2,7 @@ cask "rave-ieeg" do
   version "1.0.74,d94b68c6d88e4503aeed695c5bd1e88710c4676c"
   sha256 "d72037009dc3fd39b91ed696aa0e3bd924a8f710c77fd1c0253d4a6b264e69ee"
 
-  url "https://raw.githubusercontent.com/dipterix/ravemanager/#{version.csv.second}/inst/shell/rave",
-      verified: "raw.githubusercontent.com/dipterix/ravemanager/"
+  url "https://raw.githubusercontent.com/dipterix/ravemanager/#{version.csv.second}/inst/shell/rave"
   name "RAVE"
   desc "Reproducible Analysis and Visualization of intracranial EEG data"
   homepage "https://rave.wiki/"
